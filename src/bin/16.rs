@@ -179,7 +179,80 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let map = parse(input);
+    let dist_map = min_distance(&map);
+    let flowing: HashSet<_> = map
+        .iter()
+        .filter(|(_, valve)| valve.flow > 0)
+        .map(|(&name, _)| name)
+        .collect();
+
+    // let mut max_relieved = 0;
+    let mut q = VecDeque::new();
+    let mut seen = HashSet::new();
+
+    let mut max_relieves_states: HashMap<BTreeSet<&str>, u32> = HashMap::new();
+
+    q.push_back(State {
+        curr: "AA",
+        opened: BTreeSet::new(),
+        elapsed: 0,
+        relieved: 0,
+    });
+
+    seen.insert((BTreeSet::new(), 0, 0));
+
+    while let Some(State {
+        curr,
+        opened,
+        elapsed,
+        relieved,
+    }) = q.pop_front()
+    {
+        let relieved_at_end = wait_until_ending(26, elapsed, relieved, &opened, &map);
+        max_relieves_states
+            .entry(opened.clone())
+            .and_modify(|val| *val = relieved_at_end.max(*val))
+            .or_insert(relieved_at_end);
+
+        if opened.len() == flowing.len() || elapsed >= 26 {
+            continue;
+        }
+
+        let unopened = flowing.iter().filter(|name| !opened.contains(*name));
+
+        for dest in unopened {
+            let cost = dist_map[&(curr, *dest)] + 1;
+            let new_elapsed = elapsed + cost;
+            if new_elapsed >= 26 {
+                continue;
+            }
+
+            let relieved_per_min: u32 = opened.iter().map(|name| map[name].flow).sum();
+            let new_relieved = relieved + relieved_per_min * cost;
+
+            let mut new_opened = opened.clone();
+            new_opened.insert(dest);
+
+            if seen.insert((new_opened.clone(), new_elapsed, new_relieved)) {
+                q.push_back(State {
+                    curr: dest,
+                    opened: new_opened,
+                    elapsed: new_elapsed,
+                    relieved: new_relieved,
+                })
+            }
+        }
+    }
+    Some(
+        max_relieves_states
+            .iter()
+            .tuple_combinations()
+            .filter(|(human, elephant)| human.0.is_disjoint(elephant.0))
+            .map(|(human, elephant)| human.1 + elephant.1)
+            .max()
+            .unwrap(),
+    )
 }
 
 fn main() {
@@ -201,6 +274,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 16);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(1707));
     }
 }

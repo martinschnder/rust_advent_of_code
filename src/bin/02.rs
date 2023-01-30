@@ -14,7 +14,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 pub fn part_two(input: &str) -> Option<i32> {
     let mut total = 0;
     for line in input.lines() {
-        let other = line.chars().nth(0).unwrap() as i32 - 65;
+        let other = line.chars().next().unwrap() as i32 - 65;
         let result = line.chars().nth(2).unwrap() as i32 - 88;
         let me = match result {
             0 => (other + 2) % 3,

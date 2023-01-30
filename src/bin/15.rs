@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 type Input = Vec<Sensor>;
 
-#[derive(Debug, Clone, Hash, Eq)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Point {
     x: isize,
     y: isize,
@@ -14,11 +14,11 @@ impl Point {
     }
 }
 
-impl PartialEq for Point {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
+// impl PartialEq for Point {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.x == other.x && self.y == other.y
+//     }
+// }
 
 pub struct Sensor {
     at: Point,
@@ -28,8 +28,8 @@ pub struct Sensor {
 pub fn parse_point(s: &str) -> Option<Point> {
     let (_, point_str) = s.split_once("at")?;
     let (x_str, y_str) = point_str.split_once(", ")?;
-    let (_, x) = x_str.split_once("=")?;
-    let (_, y) = y_str.split_once("=")?;
+    let (_, x) = x_str.split_once('=')?;
+    let (_, y) = y_str.split_once('=')?;
     Some(Point {
         x: x.parse().ok()?,
         y: y.parse().ok()?,
@@ -40,7 +40,7 @@ pub fn parse(input: &str) -> Input {
     input
         .lines()
         .filter_map(|line| {
-            let (sensor_str, beacon_str) = line.split_once(":")?;
+            let (sensor_str, beacon_str) = line.split_once(':')?;
             Some(Sensor {
                 at: parse_point(sensor_str)?,
                 closest_beacon: parse_point(beacon_str)?,
@@ -51,12 +51,12 @@ pub fn parse(input: &str) -> Input {
 
 pub fn get_lines(sensor: &Sensor) -> Vec<isize> {
     let dist = sensor.at.manhattan_distance(&sensor.closest_beacon);
-    let mut result = vec![];
-    result.push(sensor.at.y - sensor.at.x - dist);
-    result.push(sensor.at.y - sensor.at.x + dist);
-    result.push(sensor.at.y + sensor.at.x + dist);
-    result.push(sensor.at.y + sensor.at.x - dist);
-    result
+    vec![
+        sensor.at.y - sensor.at.x - dist,
+        sensor.at.y - sensor.at.x + dist,
+        sensor.at.y + sensor.at.x + dist,
+        sensor.at.y + sensor.at.x - dist,
+    ]
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
@@ -86,13 +86,13 @@ pub fn is_admissible(p: Point) -> bool {
 pub fn part_two(input: &str) -> Option<isize> {
     let input = parse(input);
     let mut intersections = vec![];
-    let lines: Vec<Vec<isize>> = input.iter().map(|sensor| get_lines(sensor)).collect();
+    let lines: Vec<Vec<isize>> = input.iter().map(get_lines).collect();
     lines.iter().for_each(|line1| {
         lines.iter().for_each(|line2| {
-            for i in 0..2 {
-                for j in 2..4 {
-                    let b1 = line1[i];
-                    let b2 = line2[j];
+            for ord1 in line1.iter().take(2) {
+                for ord2 in line2.iter().take(4).skip(2) {
+                    let b1 = ord1;
+                    let b2 = ord2;
 
                     if (b1 + b2) % 2 != 0 {
                         continue;
@@ -117,7 +117,7 @@ pub fn part_two(input: &str) -> Option<isize> {
                 .count()
         })
         .collect();
-    
+
     let candidates: Vec<Point> = intersections
         .iter()
         .enumerate()

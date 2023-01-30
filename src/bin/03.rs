@@ -14,7 +14,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                 let b = parts.1;
                 a.chars()
                     .find(|char| b.contains(*char))
-                    .map(|char| priority(char))
+                    .map(priority)
             })
             .sum(),
     )
@@ -33,7 +33,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 let c = chunks.next()?;
                 a.chars()
                     .find(|char| b.contains(*char) && c.contains(*char))
-                    .map(|char| priority(char))
+                    .map(priority)
             })
             .sum()
     )

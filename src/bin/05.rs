@@ -26,7 +26,7 @@ pub fn parse(input: &str) -> Input {
     (stack, moves)
 }
 
-pub fn move_stacks(stack: &mut Stack, moves: &Vec<Move>, part: i8) {
+pub fn move_stacks(stack: &mut Stack, moves: &[Move], part: i8) {
     moves.iter().for_each(|(qty, from, to)| {
         let from = &mut stack[*from - 1];
         let vec = from.split_off(from.len() - qty);
@@ -40,9 +40,9 @@ pub fn move_stacks(stack: &mut Stack, moves: &Vec<Move>, part: i8) {
 
 pub fn get_top_row(stack: &Stack) -> String {
     let mut result = vec![];
-    for i in 0..stack.len() {
-        if stack[i].len() > 0 {
-            result.push(*stack[i].last().unwrap());
+    for s in stack {
+        if !s.is_empty() {
+            result.push(*s.last().unwrap());
         }
     }
     result.iter().collect::<String>()
