@@ -6,7 +6,10 @@ pub fn score(other: i32, me: i32) -> i32 {
 pub fn part_one(input: &str) -> Option<i32> {
     let mut total: i32 = 0;
     for line in input.lines() {
-        total += score(line.chars().next().unwrap() as i32 - 65, line.chars().nth(2).unwrap() as i32 - 88);
+        total += score(
+            line.chars().next().unwrap() as i32 - 65,
+            line.chars().nth(2).unwrap() as i32 - 88,
+        );
     }
     Some(total)
 }

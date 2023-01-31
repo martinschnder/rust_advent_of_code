@@ -37,12 +37,7 @@ pub fn part_one(input: &str) -> Option<usize> {
 
 pub fn part_two(input: &str) -> Option<usize> {
     let parsed_input = parse(input);
-    Some(
-        parsed_input
-            .iter()
-            .filter(|(a, b)| overlaps(a, b))
-            .count(),
-    )
+    Some(parsed_input.iter().filter(|(a, b)| overlaps(a, b)).count())
 }
 
 fn main() {

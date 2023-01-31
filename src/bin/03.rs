@@ -12,9 +12,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                 let parts = line.split_at(line.len() / 2);
                 let a = parts.0;
                 let b = parts.1;
-                a.chars()
-                    .find(|char| b.contains(*char))
-                    .map(priority)
+                a.chars().find(|char| b.contains(*char)).map(priority)
             })
             .sum(),
     )
@@ -35,7 +33,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                     .find(|char| b.contains(*char) && c.contains(*char))
                     .map(priority)
             })
-            .sum()
+            .sum(),
     )
 }
 
