@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Display, mem::replace};
+use std::{collections::HashMap, fmt::Display};
 
 pub enum Jet {
     Left,
